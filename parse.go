@@ -27,6 +27,7 @@ package gorest
 
 import (
 	"log"
+	nUrl "net/url"
 	"reflect"
 	"strings"
 )
@@ -58,7 +59,6 @@ func prepServiceMetaData(root string, tags reflect.StructTag, i interface{}, nam
 		if GetMarshallerByMime(tag) == nil {
 			log.Panic("The Marshaller for mime-type:[" + tag + "], is not registered. Please register this type before registering your service.")
 		}
-
 	} else {
 		md.consumesMime = Application_Json //Default
 	}
@@ -68,7 +68,7 @@ func prepServiceMetaData(root string, tags reflect.StructTag, i interface{}, nam
 			log.Panic("The Marshaller for mime-type:[" + tag + "], is not registered. Please register this type before registering your service.")
 		}
 	} else {
-		md.producesMime = Application_Json //Default
+		md.consumesMime = Application_Json //Default
 	}
 
 	if tag := tags.Get("realm"); tag != "" {
@@ -328,7 +328,7 @@ EPLOOP:
 				for upos, str1 := range strings.Split(pathPart, "/") {
 
 					if par.positionInPath == upos {
-						pathArgs[par.name] = strings.Trim(str1, " ")
+						pathArgs[par.name], _ = nUrl.QueryUnescape(strings.Trim(str1, " "))
 						break
 					}
 				}
@@ -349,7 +349,7 @@ EPLOOP:
 					} else {
 						for _, par := range ep.queryParams {
 							if par.name == pName {
-								queryArgs[pName] = strings.Trim(dataString, " ")
+								queryArgs[pName], _ = nUrl.QueryUnescape(strings.Trim(dataString, " "))
 								break
 							}
 						}

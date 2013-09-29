@@ -203,7 +203,7 @@ func (man *manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if ep, args, queryArgs, xsrft, found := getEndPointByUrl(r.Method, url_); found {
+	if ep, args, queryArgs, xsrft, found := getEndPointByUrl(r.Method, r.RequestURI); found {
 
 		ctx := new(Context)
 		ctx.writer = w
